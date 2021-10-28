@@ -8,15 +8,23 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.vanth.entity.Tracking;
+import com.vanth.controller.LoginController;
 import com.vanth.entity.Vehicle;
 import com.vanth.repository.TrackingRepository;
 import com.vanth.repository.VehicleRepository;
 
-public class TCPServer {
+@RestController
+public class TCPServer extends Thread {
 	static final int maximumClient = 100; // define max client connect to server
     static SocketChannel[] listClient = new SocketChannel[maximumClient];
     static Coord[] listLocation = new Coord[maximumClient];
@@ -24,11 +32,13 @@ public class TCPServer {
     static int port = 8081;
     
     @Autowired
-    static VehicleRepository vehicleRepo;
-    @Autowired
-    static TrackingRepository trackingRepo;
+    VehicleRepository vehicleRepo;
     
-    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+    
+    @Autowired
+    TrackingRepository trackingRepo;
+    
+    public void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         // TODO code application logic here
         
         //init data for listClient and listLocation
@@ -221,11 +231,18 @@ public class TCPServer {
         }
     }
     
-    public static boolean handleClient(SocketChannel socket, int current) throws IOException, ClassNotFoundException, InterruptedException
+    public boolean handleClient(SocketChannel socket, int current) throws IOException, ClassNotFoundException, InterruptedException
     {
-       
         ByteBuffer buffer = ByteBuffer.allocate(40);
-        int a = socket.read(buffer);
+        int a = -1;
+        try
+        {
+            a = socket.read(buffer);
+        }
+        catch (IOException e)
+        {
+            
+        }
         System.out.println("Received: " + a);
         if (a <= 0) return false;
         
@@ -258,7 +275,7 @@ public class TCPServer {
         System.out.println("Y = " + data.getY());
         System.out.println("Name: " + data.getName());
         
-        buffer.clear();
+//        buffer.clear();
         if (listLocation[current] == null) // check duplicate name in the first connection
         {
             boolean check = true; 
@@ -267,10 +284,12 @@ public class TCPServer {
                 if (listLocation[i] == null) continue;
                 if (data.getName().equalsIgnoreCase(listLocation[i].getName())) // duplicate name
                 {
+                	
                     check = false;
                     byte[] dataByte = new byte[]{(byte)(check?1:0)};
                     buffer = ByteBuffer.wrap(dataByte);
                     socket.write(buffer);
+                    
                     
                     return true;
                 }
@@ -278,6 +297,7 @@ public class TCPServer {
             
             if (!checkRetristration(name)) // check registration in database
             {
+            	System.out.println("???");
                 check = false;
                 byte[] dataByte = new byte[]{(byte)(check?1:0)};
                 buffer = ByteBuffer.wrap(dataByte);
@@ -299,10 +319,10 @@ public class TCPServer {
         listLocation[current].setY(data.getY());
         
         //save to database
-        Vehicle vehicle = new Vehicle();
-        vehicle.setId(name);
-        Tracking tracking = new Tracking(vehicle, x, y);
-        trackingRepo.save(tracking);
+//        Vehicle vehicle = new Vehicle();
+//        vehicle.setId(name);
+//        Tracking tracking = new Tracking(vehicle, x, y);
+//        trackingRepo.save(tracking);
         
         // send confirm to client
         boolean confirm = false;
@@ -312,7 +332,7 @@ public class TCPServer {
         
         return true;
     }
-    public static boolean checkRetristration(String name)
+    public boolean checkRetristration(String name)
     {
     	
 //        Connection connect = connectDatabase.getConnection();
@@ -327,9 +347,23 @@ public class TCPServer {
 //        {
 //            e.printStackTrace();
 //        }
-    	if (vehicleRepo.existsById(name)) return true;
+    	
+    	if (vehicleRepo.findById(name) != null) return true;
         
         return false;
     }
     
+  
+    public void run()
+    {
+    	try
+    	{
+    		main(null);
+    	}
+    	catch (Exception e) 
+    	{
+			// TODO: handle exception
+    		e.printStackTrace();
+		}
+    }
 }

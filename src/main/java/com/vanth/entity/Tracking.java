@@ -19,6 +19,11 @@ import javax.persistence.ManyToOne;
 public class Tracking implements Serializable {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * IdClass for primary key when using JPA annotations
      */
     public class TrackingId implements Serializable {

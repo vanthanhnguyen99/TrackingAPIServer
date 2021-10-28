@@ -16,7 +16,12 @@ import javax.persistence.OneToMany;
 @Entity(name="ACCOUNT")
 public class Account implements Serializable {
 
-    /** Primary key. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/** Primary key. */
     protected static final String PK = "username";
 
     @Id

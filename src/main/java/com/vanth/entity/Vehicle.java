@@ -17,7 +17,12 @@ import javax.persistence.OneToMany;
 @Entity(name="VEHICLE")
 public class Vehicle implements Serializable {
 
-    /** Primary key. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/** Primary key. */
     protected static final String PK = "id";
 
     @Id
