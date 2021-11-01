@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.vanth.entity.Vehicle;
 @Repository
-public interface VehicleRepository extends JpaRepository<Vehicle,String> {
+public interface VehicleRepository extends JpaRepository<Vehicle,String>  {
 
 }

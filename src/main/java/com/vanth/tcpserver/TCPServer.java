@@ -7,15 +7,20 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vanth.controller.LoginController;
@@ -23,7 +28,6 @@ import com.vanth.entity.Vehicle;
 import com.vanth.repository.TrackingRepository;
 import com.vanth.repository.VehicleRepository;
 
-@RestController
 public class TCPServer extends Thread {
 	static final int maximumClient = 100; // define max client connect to server
     static SocketChannel[] listClient = new SocketChannel[maximumClient];
@@ -31,12 +35,6 @@ public class TCPServer extends Thread {
     static int number = 0;
     static int port = 8081;
     
-    @Autowired
-    VehicleRepository vehicleRepo;
-    
-    
-    @Autowired
-    TrackingRepository trackingRepo;
     
     public void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         // TODO code application logic here
@@ -335,20 +333,19 @@ public class TCPServer extends Thread {
     public boolean checkRetristration(String name)
     {
     	
-//        Connection connect = connectDatabase.getConnection();
-//        try
-//        {
-//            Statement st = connect.createStatement();
-//            String query = "SELECT TOP 1 ID FROM VEHICLE WHERE ID = '" + name + "'"; 
-//            ResultSet rs = st.executeQuery(query);
-//            if (rs.next()) return true;
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
+        Connection connect = connectDatabase.getConnection();
+        try
+        {
+            Statement st = connect.createStatement();
+            String query = "SELECT TOP 1 ID FROM VEHICLE WHERE ID = '" + name + "'"; 
+            ResultSet rs = st.executeQuery(query);
+            if (rs.next()) return true;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     	
-    	if (vehicleRepo.findById(name) != null) return true;
         
         return false;
     }
