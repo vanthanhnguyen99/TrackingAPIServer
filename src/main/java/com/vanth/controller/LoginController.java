@@ -19,7 +19,9 @@ public class LoginController
 	@PostMapping("/login")
 	public ResponseEntity<Object> login(@RequestBody Account account)
 	{
-		
-		return new ResponseEntity<Object>("Success",HttpStatus.OK);
+		if (repo.login(account.getUsername(), account.getPassword()) == 0)
+			return new ResponseEntity<Object>(false,HttpStatus.OK);
+				
+		return new ResponseEntity<Object>(true,HttpStatus.OK);
 	}
 }
