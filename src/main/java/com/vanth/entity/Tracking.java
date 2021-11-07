@@ -19,11 +19,6 @@ import javax.persistence.ManyToOne;
 public class Tracking implements Serializable {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
      * IdClass for primary key when using JPA annotations
      */
     public class TrackingId implements Serializable {
@@ -121,14 +116,6 @@ public class Tracking implements Serializable {
      */
     public void setVehicle(Vehicle aVehicle) {
         vehicle = aVehicle;
-    }
-    
-    public Tracking(Vehicle vehicle, double x, double y)
-    {
-    	this.tracktime = LocalDateTime.now();
-    	this.vehicle = vehicle;
-    	this.x = x;
-    	this.y = y;
     }
 
     /** Temporary value holder for group key fragment vehicleId */

@@ -15,16 +15,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity(name="USERS")
 public class Users implements Serializable {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/** Primary key. */
+    /** Primary key. */
     protected static final String PK = "id";
 
     @Id
@@ -45,7 +41,7 @@ public class Users implements Serializable {
     @JoinColumn(name="USERNAME", nullable=false)
     private Account account;
     @OneToMany(mappedBy="users")
-    private Set<Vehicle> vehicle;
+    private Set<Vehicle> vehicle;;
 
     /** Default constructor. */
     public Users() {

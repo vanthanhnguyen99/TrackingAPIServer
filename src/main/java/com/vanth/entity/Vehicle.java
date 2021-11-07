@@ -17,12 +17,7 @@ import javax.persistence.OneToMany;
 @Entity(name="VEHICLE")
 public class Vehicle implements Serializable {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/** Primary key. */
+    /** Primary key. */
     protected static final String PK = "id";
 
     @Id
@@ -30,6 +25,10 @@ public class Vehicle implements Serializable {
     private String id;
     @Column(name="TITLE", nullable=false, length=100)
     private String title;
+    @Column(name="DELAY_TIME", precision=10)
+    private int delayTime;
+    @OneToMany(mappedBy="vehicle")
+    private Set<Schedule> schedule;
     @OneToMany(mappedBy="vehicle")
     private Set<Tracking> tracking;
     @ManyToOne(optional=false)
@@ -75,6 +74,42 @@ public class Vehicle implements Serializable {
      */
     public void setTitle(String aTitle) {
         title = aTitle;
+    }
+
+    /**
+     * Access method for delayTime.
+     *
+     * @return the current value of delayTime
+     */
+    public int getDelayTime() {
+        return delayTime;
+    }
+
+    /**
+     * Setter method for delayTime.
+     *
+     * @param aDelayTime the new value for delayTime
+     */
+    public void setDelayTime(int aDelayTime) {
+        delayTime = aDelayTime;
+    }
+
+    /**
+     * Access method for schedule.
+     *
+     * @return the current value of schedule
+     */
+    public Set<Schedule> getSchedule() {
+        return schedule;
+    }
+
+    /**
+     * Setter method for schedule.
+     *
+     * @param aSchedule the new value for schedule
+     */
+    public void setSchedule(Set<Schedule> aSchedule) {
+        schedule = aSchedule;
     }
 
     /**

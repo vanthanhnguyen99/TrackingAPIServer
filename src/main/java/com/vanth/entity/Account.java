@@ -12,16 +12,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity(name="ACCOUNT")
 public class Account implements Serializable {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/** Primary key. */
+    /** Primary key. */
     protected static final String PK = "username";
 
     @Id
@@ -78,7 +74,7 @@ public class Account implements Serializable {
      *
      * @return the current value of users
      */
-    public Set<Users> getUsers() {
+    public Set<Users>getUsers() {
         return users;
     }
 
