@@ -56,6 +56,7 @@ public class LoginController
 		// save data
 		try
 		{
+			System.out.println("sasdjajsdajd:" + registAccountRequest.getUsername());
 			repo.save(account);
 			repoUsers.save(users);
 		}
