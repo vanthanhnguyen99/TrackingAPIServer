@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name="VEHICLE")
 public class Vehicle implements Serializable {
 
@@ -33,6 +35,7 @@ public class Vehicle implements Serializable {
     private Set<Tracking> tracking;
     @ManyToOne(optional=false)
     @JoinColumn(name="ID_USER", nullable=false)
+    @JsonIgnore
     private Users users;
 
     /** Default constructor. */

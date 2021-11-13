@@ -17,6 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name="USERS")
 public class Users implements Serializable {
 
@@ -38,6 +40,7 @@ public class Users implements Serializable {
     @Column(name="PHOTO", length=100)
     private String photo;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name="USERNAME", nullable=false)
     private Account account;
     @OneToMany(mappedBy="users")

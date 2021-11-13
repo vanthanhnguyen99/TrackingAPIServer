@@ -14,6 +14,8 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name="SCHEDULE")
 @IdClass(Schedule.ScheduleId.class)
 public class Schedule implements Serializable {
@@ -47,6 +49,7 @@ public class Schedule implements Serializable {
     @Column(name="FINISH")
     private LocalDateTime finish;
     @ManyToOne(optional=false)
+    @JsonIgnore
     @Id
     @JoinColumn(name="VEHICLE_ID", nullable=false)
     private Vehicle vehicle;

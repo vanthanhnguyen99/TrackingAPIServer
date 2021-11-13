@@ -14,6 +14,8 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name="TRACKING")
 @IdClass(Tracking.TrackingId.class)
 public class Tracking implements Serializable {
@@ -37,6 +39,7 @@ public class Tracking implements Serializable {
     @Column(name="Y", nullable=false, precision=53)
     private double y;
     @ManyToOne(optional=false)
+    @JsonIgnore
     @Id
     @JoinColumn(name="ID_VEHICLE", nullable=false)
     private Vehicle vehicle;

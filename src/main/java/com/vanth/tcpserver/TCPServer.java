@@ -31,7 +31,7 @@ import com.vanth.repository.VehicleRepository;
 public class TCPServer extends Thread {
 	static final int maximumClient = 100; // define max client connect to server
     static SocketChannel[] listClient = new SocketChannel[maximumClient];
-    static Coord[] listLocation = new Coord[maximumClient];
+    public static Coord[] listLocation = new Coord[maximumClient];
     static int number = 0;
     static int port = 8081;
     

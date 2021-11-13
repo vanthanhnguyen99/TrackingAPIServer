@@ -1,5 +1,9 @@
 package com.vanth.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vanth.entity.Users;
+import com.vanth.entity.Vehicle;
 import com.vanth.repository.UserRepository;
+import com.vanth.request.VehicleRequestHome;
+import com.vanth.tcpserver.Coord;
+import com.vanth.tcpserver.TCPServer;
 
 import net.bytebuddy.asm.Advice.Return;
 
@@ -33,7 +41,31 @@ public class UserController {
 			
 			Users user =  repo.getById(id_user);
 			
-			return new ResponseEntity<Object>(user.getVehicle(),HttpStatus.OK);
+			List<VehicleRequestHome> vehicleRequestHomes = new ArrayList<VehicleRequestHome>();
+			
+			for (Vehicle vehicle:user.getVehicle())
+			{
+				VehicleRequestHome vehicleRequestHome = new VehicleRequestHome();
+				vehicleRequestHome.setId(vehicle.getId());
+				vehicleRequestHome.setTitle(vehicle.getTitle());
+				vehicleRequestHome.setUser_id(vehicle.getUsers().getId());
+				vehicleRequestHome.setDelayTime(vehicle.getDelayTime());
+				vehicleRequestHome.setOnline(false);
+				
+				for (Coord coord:TCPServer.listLocation)
+				{
+					if (coord == null) continue;
+					if (coord.getName().equalsIgnoreCase(vehicle.getId()))
+					{
+						vehicleRequestHome.setOnline(true);
+						break;
+					}
+				}
+				
+				vehicleRequestHomes.add(vehicleRequestHome);
+			}
+			
+			return new ResponseEntity<Object>(vehicleRequestHomes,HttpStatus.OK);
 			
 		}
 		catch (Exception e) 
