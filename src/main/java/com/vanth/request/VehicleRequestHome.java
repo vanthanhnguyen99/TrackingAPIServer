@@ -34,10 +34,10 @@ public class VehicleRequestHome {
 	public void setUser_id(int user_id) {
 		this.user_id = user_id;
 	}
-	public boolean isOnline() {
+	public boolean getisOnline() {
 		return isOnline;
 	}
-	public void setOnline(boolean isOnline) {
+	public void setisOnline(boolean isOnline) {
 		this.isOnline = isOnline;
 	}
     

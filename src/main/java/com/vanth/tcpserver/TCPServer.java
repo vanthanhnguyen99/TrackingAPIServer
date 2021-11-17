@@ -269,9 +269,9 @@ public class TCPServer extends Thread {
         name = name.trim();
         // get data from byte array
         Coord data = new Coord(x,y,name);
-        System.out.println("X = " + data.getX());
-        System.out.println("Y = " + data.getY());
-        System.out.println("Name: " + data.getName());
+//        System.out.println("X = " + data.getX());
+//        System.out.println("Y = " + data.getY());
+//        System.out.println("Name: " + data.getName());
         
 //        buffer.clear();
         if (listLocation[current] == null) // check duplicate name in the first connection

@@ -35,6 +35,7 @@ public class UserController {
 	@GetMapping("/vehicle-user/{id_user}")
 	public ResponseEntity<Object> getUserVehicle(@PathVariable int id_user)
 	{
+		
 		try
 		{
 			if (!repo.existsById(id_user) ) return new ResponseEntity<Object>("102",HttpStatus.BAD_REQUEST);
@@ -50,14 +51,15 @@ public class UserController {
 				vehicleRequestHome.setTitle(vehicle.getTitle());
 				vehicleRequestHome.setUser_id(vehicle.getUsers().getId());
 				vehicleRequestHome.setDelayTime(vehicle.getDelayTime());
-				vehicleRequestHome.setOnline(false);
+				vehicleRequestHome.setisOnline(false);
 				
 				for (Coord coord:TCPServer.listLocation)
 				{
 					if (coord == null) continue;
-					if (coord.getName().equalsIgnoreCase(vehicle.getId()))
+					if (coord.getName().trim().equalsIgnoreCase(vehicle.getId()))
 					{
-						vehicleRequestHome.setOnline(true);
+						vehicleRequestHome.setisOnline(true);
+						System.out.println("hello");
 						break;
 					}
 				}
