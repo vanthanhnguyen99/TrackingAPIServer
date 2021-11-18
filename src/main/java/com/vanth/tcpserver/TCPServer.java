@@ -8,8 +8,10 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vanth.controller.LoginController;
+import com.vanth.entity.Tracking;
 import com.vanth.entity.Vehicle;
 import com.vanth.repository.TrackingRepository;
 import com.vanth.repository.VehicleRepository;
@@ -317,10 +320,7 @@ public class TCPServer extends Thread {
         listLocation[current].setY(data.getY());
         
         //save to database
-//        Vehicle vehicle = new Vehicle();
-//        vehicle.setId(name);
-//        Tracking tracking = new Tracking(vehicle, x, y);
-//        trackingRepo.save(tracking);
+        saveDataTracking(data.getName(),data.getX(), data.getY());
         
         // send confirm to client
         boolean confirm = false;
@@ -348,6 +348,27 @@ public class TCPServer extends Thread {
     	
         
         return false;
+    }
+    
+    public boolean saveDataTracking(String id_vehicle,double x, double y)
+    {
+    	Connection connect = connectDatabase.getConnection();
+        try
+        {
+        	LocalDateTime now = LocalDateTime.now();
+        	
+            String query = "INSERT INTO TRACKING(ID_VEHICLE,TRACKTIME,X,Y) VALUES ('" + id_vehicle + "','" + now.toString() + "'," + x + "," + y + ")";
+            PreparedStatement ps = connect.prepareStatement(query);
+            ps.executeUpdate();
+            System.out.println(query);
+            
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
     
   

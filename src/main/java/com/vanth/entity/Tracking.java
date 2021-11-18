@@ -17,16 +17,16 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity(name="TRACKING")
-@IdClass(Tracking.TrackingId.class)
+@IdClass(TrackingId.class)
 public class Tracking implements Serializable {
 
     /**
      * IdClass for primary key when using JPA annotations
-     */
-    public class TrackingId implements Serializable {
-        Vehicle vehicle;
-        java.time.LocalDateTime tracktime;
-    }
+//     */
+//    public class TrackingId implements Serializable {
+//        Vehicle vehicle;
+//        java.time.LocalDateTime tracktime;
+//    }
 
     /** Primary key. */
     protected static final String PK = "TrackingPkTracking";

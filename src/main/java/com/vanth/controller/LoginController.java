@@ -12,7 +12,7 @@ import com.vanth.entity.Account;
 import com.vanth.entity.Users;
 import com.vanth.repository.AccountRepository;
 import com.vanth.repository.UserRepository;
-import com.vanth.request.RegistAccountRequest;
+import com.vanth.request_response.RegistAccountRequest;
 
 @RestController
 public class LoginController 

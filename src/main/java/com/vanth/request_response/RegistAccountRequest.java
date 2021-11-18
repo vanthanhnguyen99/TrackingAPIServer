@@ -1,4 +1,4 @@
-package com.vanth.request;
+package com.vanth.request_response;
 
 public class RegistAccountRequest {
 	String name;
