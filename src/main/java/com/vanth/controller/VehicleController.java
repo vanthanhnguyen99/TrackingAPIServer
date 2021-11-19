@@ -48,7 +48,7 @@ public class VehicleController {
 			if (coord.getName().equalsIgnoreCase(id))
 			{
 				deviceInfoResponse.setState(true);
-				deviceInfoResponse.setLastConnectTime("Đang hoạt động");
+				deviceInfoResponse.setLastConnectTime("Đang kết nối");
 				deviceInfoResponse.setLastX(coord.getX());
 				deviceInfoResponse.setLastY(coord.getY());
 				
@@ -68,7 +68,7 @@ public class VehicleController {
 		catch (Exception e) 
 		{
 			// TODO: handle exception
-			e.printStackTrace();
+//			e.printStackTrace();
 			deviceInfoResponse.setLastConnectTime("N/A");
 			deviceInfoResponse.setLastX(-1);
 			deviceInfoResponse.setLastY(-1);

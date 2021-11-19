@@ -7,6 +7,6 @@ import com.vanth.entity.Tracking;
 import com.vanth.entity.TrackingId;
 
 public interface TrackingRepository extends JpaRepository<Tracking, TrackingId> {
-	@Query(value = "SELECT TOP(1) * FROM TRACKING WHERE ID_VEHICLE = ?1", nativeQuery = true)
+	@Query(value = "SELECT TOP(1) * FROM TRACKING WHERE ID_VEHICLE = ?1 ORDER BY TRACKTIME DESC", nativeQuery = true)
 	public Tracking getLastTracking(String id_vehile); 
 }
