@@ -1,5 +1,8 @@
 package com.vanth.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,8 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vanth.DTO.ScheduleDTO;
+import com.vanth.converter.ScheduleConverter;
+import com.vanth.entity.Schedule;
 import com.vanth.entity.Tracking;
 import com.vanth.entity.Vehicle;
+import com.vanth.repository.ScheduleRepository;
 import com.vanth.repository.TrackingRepository;
 import com.vanth.repository.UserRepository;
 import com.vanth.repository.VehicleRepository;
@@ -23,6 +30,9 @@ public class VehicleController {
 	
 	@Autowired
 	TrackingRepository trackingRepo;
+	
+	@Autowired
+	ScheduleRepository scheduleRepo;
 	
 	@GetMapping("/vehicle")
 	public ResponseEntity<Object> getAllVehicle()
@@ -75,6 +85,36 @@ public class VehicleController {
 		}
 		
 		return new ResponseEntity<Object>(deviceInfoResponse,HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("/schedule/{id_vehicle}")
+	public ResponseEntity<Object> getListVehicleSchedule(@PathVariable String id_vehicle)
+	{
+		if (!repo.existsById(id_vehicle))
+			return new ResponseEntity<Object>("102",HttpStatus.BAD_REQUEST);
+		
+		System.out.println("id = " + id_vehicle);
+		
+		try
+		{
+			List<Schedule> list = scheduleRepo.getVehicleSchedule(id_vehicle);
+			
+			List<ScheduleDTO> dtos = new ArrayList<ScheduleDTO>();
+			for (Schedule schedule:list)
+			{
+				dtos.add(ScheduleConverter.convertScheduleToScheduleDTO(schedule));
+			}
+			
+			return new ResponseEntity<Object>(dtos,HttpStatus.OK);
+		}
+		catch (Exception e) 
+		{
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
+		
 		
 	}
 }

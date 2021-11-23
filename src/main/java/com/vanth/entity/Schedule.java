@@ -17,16 +17,16 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity(name="SCHEDULE")
-@IdClass(Schedule.ScheduleId.class)
+@IdClass(ScheduleId.class)
 public class Schedule implements Serializable {
 
     /**
      * IdClass for primary key when using JPA annotations
      */
-    public class ScheduleId implements Serializable {
-        Vehicle vehicle;
-        java.time.LocalDateTime startTime;
-    }
+//    public class ScheduleId implements Serializable {
+//        Vehicle vehicle;
+//        java.time.LocalDateTime startTime;
+//    }
 
     /** Primary key. */
     protected static final String PK = "SchedulePkSchedule";
