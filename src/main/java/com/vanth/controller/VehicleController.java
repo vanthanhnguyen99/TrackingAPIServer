@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vanth.DTO.ScheduleDTO;
@@ -115,6 +117,28 @@ public class VehicleController {
 		}
 		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
 		
-		
+	}
+	
+	@PostMapping("/add-schedule")
+	public ResponseEntity<Object> addVehicleSchedule(@RequestBody ScheduleDTO scheduleDTO)
+	{
+		try
+		{
+			if (repo.existsById(scheduleDTO.getVehicle_id()))
+				return new ResponseEntity<Object>("102",HttpStatus.BAD_REQUEST);
+			
+			Schedule schedule = ScheduleConverter.convertScheduleDTOToSchedule(scheduleDTO);
+			
+			scheduleRepo.save(schedule);
+			
+			return new ResponseEntity<Object>("200",HttpStatus.OK);
+			
+		}
+		catch (Exception e) 
+		{
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
