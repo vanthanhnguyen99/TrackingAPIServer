@@ -32,10 +32,16 @@ import com.vanth.repository.TrackingRepository;
 import com.vanth.repository.VehicleRepository;
 
 public class TCPServer extends Thread {
-	static final int maximumClient = 100; // define max client connect to server
+	static final int maximumClient = 500; // define max client connect to server
     static SocketChannel[] listClient = new SocketChannel[maximumClient];
+    static SocketChannel[] userDevice = new SocketChannel[maximumClient]; // user's devices
+    static int[] userID = new int[maximumClient];
     public static Coord[] listLocation = new Coord[maximumClient];
-    static int number = 0;
+    
+    
+    
+    static int numberClient = 0;
+    static int numberDevice = 0;
     static int port = 8081;
     
     
@@ -47,6 +53,8 @@ public class TCPServer extends Thread {
         {
             listClient[i] = null;
             listLocation[i] = null;
+            userDevice[i] = null;
+            userID[i] = -1;
         }
         
         Selector selector = Selector.open();
@@ -65,13 +73,16 @@ public class TCPServer extends Thread {
             while(keys.hasNext())
             {
                 SelectionKey key = keys.next();
-                if(!key.isValid()) continue;
+                if(!key.isValid())
+                {
+                	System.out.println("Not valid");
+                	continue;
+                }
                 if(key.isReadable())
                 {
                     
                     SocketChannel socket = (SocketChannel)key.channel();
-                    
-                    
+                    System.out.println("comming");
                     int i = 0;
                     for (i = 0; i < maximumClient; i++) // search in listClient
                     {
@@ -86,12 +97,31 @@ public class TCPServer extends Thread {
                                 System.out.println("Client Disconnected " + socket);
                                 listClient[current] = null;
                                 listLocation[current] = null;
-                                number--;
+                                numberClient--;
                                 
                                 socket.close();
                             }
                             break;
                         }
+                    }
+                    if (i < maximumClient) continue;
+                    for (i = 0; i < maximumClient; i++) // search in listDevice
+                    {
+                    	if (userDevice[i] == null) continue;
+                    	if (userDevice[i] == socket) // in listDevice
+                    	{
+                    		// handle for user's devices
+                    		if (!handleDevice(socket, i))
+                    		{
+                    			System.out.println("Device Disconnected " + socket);
+                    			userDevice[i] = null;
+                    			userID[i] = -1;
+                    			numberDevice--;
+                    			
+                    			socket.close();
+                    		}
+                    		break;
+                    	}
                     }
                     
                     if (i < maximumClient) continue;
@@ -109,10 +139,10 @@ public class TCPServer extends Thread {
                     }
                     
                     int type = copy.getInt(0);  
-//                    System.out.println("Number: " + type);
+                    System.out.println("Number: " + type);
                     if (type == 1) // simulator
                     {
-                        if (number == maximumClient)
+                        if (numberClient == maximumClient)
                         {
                             buffer.clear();
                             boolean check = false;
@@ -123,7 +153,6 @@ public class TCPServer extends Thread {
                             
                             continue;
                         }
-                        
                         
                         // send back to client
                         {
@@ -139,12 +168,48 @@ public class TCPServer extends Thread {
                                 if (listClient[i] == null)
                                 {
                                     listClient[i] = socket;
-                                    number++;
+                                    numberClient++;
                                     break;
                                 }
                             }
                         }
                        
+                    }
+                    else if (type == 2)
+                    {
+                    	if (numberDevice == maximumClient)
+                    	{
+                    		buffer.clear();
+                            boolean check = false;
+                            byte[] dataByte = new byte[]{(byte)(check?1:0)};
+                            buffer = ByteBuffer.wrap(dataByte);
+                            socket.write(buffer);
+                            socket.close();
+                            
+                            continue;
+                    	}
+                    	
+                    	// send back to device
+                        {
+                            
+                            for (i = 0; i < maximumClient; i++) // socket to list
+                            {
+                                if (userDevice[i] == null)
+                                {
+                                    userDevice[i] = socket;
+                                    numberDevice++;
+                                    System.out.println("Added");
+                                    break;
+                                }
+                            }
+                            
+                            // send confirm to client
+                            buffer.clear();
+                            boolean check = true;
+                            byte[] dataByte = new byte[]{(byte)(check?1:0)};
+                            buffer = ByteBuffer.wrap(dataByte);
+                            socket.write(buffer);
+                        }
                     }
                     /*
                     if(socket.read(buffer) == -1) //-1 is end of stream
@@ -165,10 +230,10 @@ public class TCPServer extends Thread {
                 else if(key.isAcceptable())
                 {
                     
-                    ServerSocketChannel serverChannel = (ServerSocketChannel)key.channel();
-                    SocketChannel socket = serverChannel.accept();
+//                    ServerSocketChannel serverChannel = (ServerSocketChannel)key.channel();
+                    SocketChannel socket = server.accept();
                     socket.configureBlocking(false);
-//                    socket.register(selector, SelectionKey.OP_WRITE);
+                    
                     socket.register(selector, SelectionKey.OP_READ);
                     System.out.println("Client Connected " + socket);  
 
@@ -323,13 +388,69 @@ public class TCPServer extends Thread {
         saveDataTracking(data.getName(),data.getX(), data.getY());
         
         // send confirm to client
-        boolean confirm = false;
+        boolean confirm = true;
         byte[] dataByte = new byte[]{(byte)(confirm?1:0)};
         buffer = ByteBuffer.wrap(dataByte);
         socket.write(buffer);
         
         return true;
     }
+    
+    boolean handleDevice(SocketChannel socket, int current) throws IOException
+    {
+ 
+    	ByteBuffer buffer = ByteBuffer.allocate(4);
+        int a = -1;
+        try
+        {
+            a = socket.read(buffer);
+        }
+        catch (IOException e)
+        {
+            
+        }
+        System.out.println("Received: " + a);
+        if (a <= 0) return false;
+        
+        
+        // Receive user id
+        ByteBuffer copy = ByteBuffer.allocate(4);
+        // rotate byte
+        for (int i = 0; i < buffer.capacity(); i++)  
+        {
+            copy.put(i,buffer.get(buffer.capacity()-i-1));
+        }
+        
+        int userid = copy.getInt(0); // add to list???
+        System.out.println("user id = " + userid);
+        
+        // check signed in
+        for (int i = 0; i < maximumClient; i++)
+        {
+        	if (userID[i] == -1) continue;       	
+        	if (userID[i] == userid)
+        	{
+        		// send confirm to client
+                boolean confirm = false;
+                byte[] dataByte = new byte[]{(byte)(confirm?1:0)};
+                buffer = ByteBuffer.wrap(dataByte);
+                socket.write(buffer);
+                
+                return true;
+        	}
+        }
+        
+        // send confirm to client
+        boolean confirm = true;
+        byte[] dataByte = new byte[]{(byte)(confirm?1:0)};
+        buffer = ByteBuffer.wrap(dataByte);
+        socket.write(buffer);
+        
+        userID[current] = userid;
+    	
+    	return true;
+    }
+    
     public boolean checkRetristration(String name)
     {
     	
