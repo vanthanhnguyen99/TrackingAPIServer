@@ -440,6 +440,7 @@ public class TCPServer extends Thread {
         	}
         }
         
+        
         // send confirm to client
         boolean confirm = true;
         byte[] dataByte = new byte[]{(byte)(confirm?1:0)};
@@ -449,6 +450,27 @@ public class TCPServer extends Thread {
         userID[current] = userid;
     	
     	return true;
+    }
+    
+    // data arg: json data string
+    public static void sendDataForUser(String data, int id) throws IOException
+    {
+    	for (int i = 0; i < maximumClient; i++)
+    	{
+    		if (userID[i] == -1) continue;
+    		
+    		if (userID[i] == id)
+    		{
+    			// send Sting data to client
+    			SocketChannel socket = userDevice[i];
+    			System.out.println(socket);
+    			ByteBuffer buffer = ByteBuffer.allocate(256);
+    			
+    			buffer = ByteBuffer.wrap(data.getBytes());
+    			socket.write(buffer);
+    			System.out.println(new String(buffer.array()));
+    		}
+    	}
     }
     
     public boolean checkRetristration(String name)
