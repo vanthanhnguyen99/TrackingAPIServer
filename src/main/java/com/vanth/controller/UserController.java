@@ -10,11 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vanth.converter.JsonConverter;
 import com.vanth.entity.Users;
 import com.vanth.entity.Vehicle;
 import com.vanth.repository.UserRepository;
+import com.vanth.request_response.NotificationRequest;
 import com.vanth.request_response.VehicleRequestHome;
 import com.vanth.tcpserver.Coord;
 import com.vanth.tcpserver.TCPServer;
@@ -79,16 +82,19 @@ public class UserController {
 	}
 	
 	@PostMapping("/notify")
-	public ResponseEntity<Object> pushNotification()
+	public ResponseEntity<Object> pushNotification(@RequestBody NotificationRequest notificationRequest)
 	{
 		try 
 		{
-			TCPServer.sendDataForUser("123", 1);
-			
+			String data = JsonConverter.convertObjectToJson(notificationRequest);
+			TCPServer.sendDataForUser(data, notificationRequest.getId_user());
+			System.out.println(data);
+			return new ResponseEntity<Object>("200",HttpStatus.OK);
 		}
 		catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
-		return new ResponseEntity<Object>("103",HttpStatus.OK);
+		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

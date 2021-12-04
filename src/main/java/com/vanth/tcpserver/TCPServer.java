@@ -82,7 +82,7 @@ public class TCPServer extends Thread {
                 {
                     
                     SocketChannel socket = (SocketChannel)key.channel();
-                    System.out.println("comming");
+//                    System.out.println("comming");
                     int i = 0;
                     for (i = 0; i < maximumClient; i++) // search in listClient
                     {
@@ -309,7 +309,7 @@ public class TCPServer extends Thread {
         {
             
         }
-        System.out.println("Received: " + a);
+//        System.out.println("Received: " + a);
         if (a <= 0) return false;
         
         ByteBuffer copy = ByteBuffer.allocate(buffer.capacity());
@@ -409,7 +409,7 @@ public class TCPServer extends Thread {
         {
             
         }
-        System.out.println("Received: " + a);
+//        System.out.println("Received: " + a);
         if (a <= 0) return false;
         
         
