@@ -425,7 +425,7 @@ public class TCPServer extends Thread {
         System.out.println("user id = " + userid);
         
         // check signed in
-        for (int i = 0; i < maximumClient; i++)
+/*        for (int i = 0; i < maximumClient; i++)
         {
         	if (userID[i] == -1) continue;       	
         	if (userID[i] == userid)
@@ -438,7 +438,7 @@ public class TCPServer extends Thread {
                 
                 return true;
         	}
-        }
+        } */
         
         
         // send confirm to client
