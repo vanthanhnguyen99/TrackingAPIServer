@@ -1,5 +1,6 @@
 package com.vanth.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vanth.DTO.ScheduleDTO;
 import com.vanth.converter.ScheduleConverter;
 import com.vanth.entity.Schedule;
+import com.vanth.entity.ScheduleReport;
 import com.vanth.entity.Tracking;
 import com.vanth.entity.Vehicle;
+import com.vanth.repository.ScheduleReportRepository;
 import com.vanth.repository.ScheduleRepository;
 import com.vanth.repository.TrackingRepository;
 import com.vanth.repository.UserRepository;
@@ -35,6 +38,9 @@ public class VehicleController {
 	
 	@Autowired
 	ScheduleRepository scheduleRepo;
+	
+	@Autowired
+	ScheduleReportRepository scheduleReportRepo;
 	
 	@GetMapping("/vehicle")
 	public ResponseEntity<Object> getAllVehicle()
@@ -124,12 +130,26 @@ public class VehicleController {
 	{
 		try
 		{
-			if (repo.existsById(scheduleDTO.getVehicle_id()))
+			if (!repo.existsById(scheduleDTO.getVehicle_id()))
 				return new ResponseEntity<Object>("102",HttpStatus.BAD_REQUEST);
 			
-			Schedule schedule = ScheduleConverter.convertScheduleDTOToSchedule(scheduleDTO);
+//			Vehicle vehicle = repo.getById(scheduleDTO.getVehicle_id());
+//			
+//			Schedule schedule = ScheduleConverter.convertScheduleDTOToSchedule(scheduleDTO);
+//			schedule.setVehicle(vehicle);
+//			System.out.println(schedule.getVehicle().getId());
 			
-			scheduleRepo.save(schedule);
+			String vehicle_id = scheduleDTO.getVehicle_id();
+			LocalDateTime start_time = scheduleDTO.getStart_time();
+			double start_x = scheduleDTO.getStart_x();
+			double start_y = scheduleDTO.getStart_y();
+			LocalDateTime finish_time = scheduleDTO.getFinish_time();
+			double finish_x = scheduleDTO.getFinish_x();
+			double finish_y = scheduleDTO.getFinish_y();
+			int status = scheduleDTO.getStatus();
+			LocalDateTime finish = scheduleDTO.getFinish();
+			
+			repo.insertSchedule(vehicle_id, start_time, start_x, start_y, finish_time, finish_x, finish_y, status, finish);
 			
 			return new ResponseEntity<Object>("200",HttpStatus.OK);
 			
@@ -139,6 +159,26 @@ public class VehicleController {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@GetMapping("/schedule-report/{id}")
+	public ResponseEntity<Object> getScheduleVehicleReport(@PathVariable String id)
+	{
+		if (!repo.existsById(id))
+			return new ResponseEntity<Object>("102",HttpStatus.BAD_REQUEST);
+		
+		try
+		{
+			List<ScheduleReport> list = scheduleReportRepo.getScheduleReport(id);
+			return new ResponseEntity<Object>(list,HttpStatus.OK);
+		}
+		catch (Exception e) 
+		{
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
 		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

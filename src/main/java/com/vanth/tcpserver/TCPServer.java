@@ -468,7 +468,7 @@ public class TCPServer extends Thread {
     			
     			buffer = ByteBuffer.wrap(data.getBytes());
     			socket.write(buffer);
-    			System.out.println(new String(buffer.array()));
+//    			System.out.println(new String(buffer.array()));
     		}
     	}
     }

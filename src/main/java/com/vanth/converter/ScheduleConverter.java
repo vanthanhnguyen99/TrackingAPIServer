@@ -32,8 +32,7 @@ public class ScheduleConverter {
 		schedule.setFinishY(scheduleDTO.getFinish_y());
 		schedule.setStatus(scheduleDTO.getStatus());
 		schedule.setFinish(scheduleDTO.getFinish());
-		Vehicle vehicle = new Vehicle();
-		vehicle.setId(scheduleDTO.getVehicle_id());
+
 		
 		return schedule;
 	}
