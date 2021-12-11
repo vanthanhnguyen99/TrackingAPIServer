@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vanth.DTO.ScheduleDTO;
+import com.vanth.DTO.VehicleDTO;
 import com.vanth.converter.ScheduleConverter;
+import com.vanth.converter.VehicleConverter;
 import com.vanth.entity.Schedule;
 import com.vanth.entity.ScheduleReport;
 import com.vanth.entity.Tracking;
@@ -179,6 +181,30 @@ public class VehicleController {
 			e.printStackTrace();
 		}
 		
+		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@PostMapping("/add-vehicle")
+	public ResponseEntity<Object> addVehicle(@RequestBody VehicleDTO vehicleDTO)
+	{
+		try
+		{
+			Vehicle vehicle = VehicleConverter.convertVehicleDTOToVehicle(vehicleDTO);
+			
+			System.out.println(vehicle.getId());
+			if (repo.existsById(vehicle.getId()))
+				return new ResponseEntity<Object>("101",HttpStatus.BAD_REQUEST);
+			
+			System.out.println("test");
+			repo.save(vehicle);
+			return new ResponseEntity<Object>("200",HttpStatus.OK);
+			
+		}
+		catch (Exception e) 
+		{
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

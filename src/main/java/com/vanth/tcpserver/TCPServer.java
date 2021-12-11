@@ -1,7 +1,13 @@
 package com.vanth.tcpserver;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -12,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +29,12 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vanth.controller.LoginController;
 import com.vanth.entity.Tracking;
 import com.vanth.entity.Vehicle;
@@ -35,6 +45,7 @@ public class TCPServer extends Thread {
 	static final int maximumClient = 500; // define max client connect to server
     static SocketChannel[] listClient = new SocketChannel[maximumClient];
     static SocketChannel[] userDevice = new SocketChannel[maximumClient]; // user's devices
+  
     static int[] userID = new int[maximumClient];
     public static Coord[] listLocation = new Coord[maximumClient];
     
@@ -309,7 +320,7 @@ public class TCPServer extends Thread {
         {
             
         }
-//        System.out.println("Received: " + a);
+
         if (a <= 0) return false;
         
         ByteBuffer copy = ByteBuffer.allocate(buffer.capacity());
@@ -335,13 +346,10 @@ public class TCPServer extends Thread {
         copy.get(arr);
         String name = new String(arr);
         name = name.trim();
+        
         // get data from byte array
         Coord data = new Coord(x,y,name);
-//        System.out.println("X = " + data.getX());
-//        System.out.println("Y = " + data.getY());
-//        System.out.println("Name: " + data.getName());
-        
-//        buffer.clear();
+
         if (listLocation[current] == null) // check duplicate name in the first connection
         {
             boolean check = true; 
@@ -409,7 +417,6 @@ public class TCPServer extends Thread {
         {
             
         }
-//        System.out.println("Received: " + a);
         if (a <= 0) return false;
         
         
@@ -423,22 +430,6 @@ public class TCPServer extends Thread {
         
         int userid = copy.getInt(0); // add to list???
         System.out.println("user id = " + userid);
-        
-        // check signed in
-/*        for (int i = 0; i < maximumClient; i++)
-        {
-        	if (userID[i] == -1) continue;       	
-        	if (userID[i] == userid)
-        	{
-        		// send confirm to client
-                boolean confirm = false;
-                byte[] dataByte = new byte[]{(byte)(confirm?1:0)};
-                buffer = ByteBuffer.wrap(dataByte);
-                socket.write(buffer);
-                
-                return true;
-        	}
-        } */
         
         
         // send confirm to client
@@ -514,11 +505,37 @@ public class TCPServer extends Thread {
         return true;
     }
     
+    static double getDistance(CoordRequest start, CoordRequest finish) throws IOException, URISyntaxException {
+        
+    	RestTemplate restTemplate = new RestTemplate();
+    	String resourceUrl = "https://bing-map-api.herokuapp.com/bingmap/distance/coordinates";
+    	URI uri = new URI(resourceUrl);
+    	
+    	DistanceRequest distanceRequest = new DistanceRequest(start, finish);
+    	
+    	ResponseEntity<DistanceResponse> res = restTemplate.postForEntity(uri, distanceRequest, DistanceResponse.class);
+
+    	
+        return res.getBody().getTravelDistance();
+
+    }
+    
   
     public void run()
     {
     	try
     	{
+    		
+//    		CoordRequest start = new CoordRequest();
+//    		start.setLatitude(10.84993);
+//    		start.setLongitude(106.79094);
+//    		
+//    		CoordRequest finish = new CoordRequest();
+//    		finish.setLatitude(10.83876);
+//    		finish.setLongitude(106.77443);
+//    		
+//    		MyGETRequest(start, finish);
+    		
     		main(null);
     	}
     	catch (Exception e) 
