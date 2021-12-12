@@ -45,6 +45,8 @@ public class TCPServer extends Thread {
 	static final int maximumClient = 500; // define max client connect to server
     static SocketChannel[] listClient = new SocketChannel[maximumClient];
     static SocketChannel[] userDevice = new SocketChannel[maximumClient]; // user's devices
+    static LocalDateTime[] timeReceive = new LocalDateTime[maximumClient];
+    static double[] distance = new double[maximumClient];
   
     static int[] userID = new int[maximumClient];
     public static Coord[] listLocation = new Coord[maximumClient];
@@ -66,6 +68,8 @@ public class TCPServer extends Thread {
             listLocation[i] = null;
             userDevice[i] = null;
             userID[i] = -1;
+            distance[i] = 0;
+            timeReceive[i] = null;
         }
         
         Selector selector = Selector.open();
@@ -106,6 +110,12 @@ public class TCPServer extends Thread {
                             if (!handleClient(socket, current))
                             {
                                 System.out.println("Client Disconnected " + socket);
+                                
+                                
+                                // save distance
+                                saveDistance(listLocation[current].getName(),LocalDateTime.now(),distance[current]);
+                                distance[current] = 0;
+                                
                                 listClient[current] = null;
                                 listLocation[current] = null;
                                 numberClient--;
@@ -389,11 +399,50 @@ public class TCPServer extends Thread {
             return true;
             
         }
-        listLocation[current].setX(data.getX());
-        listLocation[current].setY(data.getY());
+        
         
         //save to database
         saveDataTracking(data.getName(),data.getX(), data.getY());
+        
+        if (listLocation[current]  != null)
+        {
+        	LocalDateTime now = LocalDateTime.now();
+        	if (timeReceive[current] != null && timeReceive[current].getDayOfMonth() != now.getDayOfMonth())
+        	{
+        		// save distance to db
+        		saveDistance(data.getName(),now,distance[current]);
+        		
+        		distance[current] = 0;
+        		timeReceive[current] = now;
+        	}
+        	else
+        	{
+        		CoordRequest start = new CoordRequest();
+                start.setLatitude(listLocation[current].getX());
+                start.setLongitude(listLocation[current].getY());
+                
+                CoordRequest finish = new CoordRequest();
+                finish.setLatitude(data.getX());
+                finish.setLongitude(data.getY());
+                
+                double temp = -1;
+                try
+                {
+                	temp = getDistance(start, finish);
+	               	distance[current] = distance[current] + temp;
+	               	timeReceive[current] = now;
+                }
+                catch (Exception e) 
+                {
+                	// TODO: handle exception
+                }
+        	}
+        	
+        }
+       
+        
+        listLocation[current].setX(data.getX());
+        listLocation[current].setY(data.getY());
         
         // send confirm to client
         boolean confirm = true;
@@ -518,6 +567,27 @@ public class TCPServer extends Thread {
     	
         return res.getBody().getTravelDistance();
 
+    }
+    
+    public boolean saveDistance(String id_vehicle,LocalDateTime time, double distance)
+    {
+    	Connection connect = connectDatabase.getConnection();
+    	
+    	 try
+         {
+         	
+             String query = "EXEC INSERTDISTANCE '" + time.toString() + "' , '" + id_vehicle + "', " + distance ;
+             PreparedStatement ps = connect.prepareStatement(query);
+             ps.executeUpdate();
+             System.out.println(query);
+             
+         }
+         catch (Exception e)
+         {
+             e.printStackTrace();
+             return false;
+         }
+         return true;
     }
     
   

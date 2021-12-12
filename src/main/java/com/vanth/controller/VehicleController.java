@@ -17,17 +17,21 @@ import com.vanth.DTO.ScheduleDTO;
 import com.vanth.DTO.VehicleDTO;
 import com.vanth.converter.ScheduleConverter;
 import com.vanth.converter.VehicleConverter;
+import com.vanth.entity.DistanceReport;
 import com.vanth.entity.Schedule;
 import com.vanth.entity.ScheduleReport;
 import com.vanth.entity.Tracking;
 import com.vanth.entity.Vehicle;
+import com.vanth.repository.DistanceReportRepository;
 import com.vanth.repository.ScheduleReportRepository;
 import com.vanth.repository.ScheduleRepository;
 import com.vanth.repository.TrackingRepository;
 import com.vanth.repository.UserRepository;
 import com.vanth.repository.VehicleRepository;
 import com.vanth.request_response.DeviceInfoResponse;
+import com.vanth.request_response.DistanceRequestEntity;
 import com.vanth.tcpserver.Coord;
+import com.vanth.tcpserver.DistanceRequest;
 import com.vanth.tcpserver.TCPServer;
 
 @RestController
@@ -43,6 +47,9 @@ public class VehicleController {
 	
 	@Autowired
 	ScheduleReportRepository scheduleReportRepo;
+	
+	@Autowired
+	DistanceReportRepository distanceReportRepo;
 	
 	@GetMapping("/vehicle")
 	public ResponseEntity<Object> getAllVehicle()
@@ -200,6 +207,27 @@ public class VehicleController {
 			return new ResponseEntity<Object>("200",HttpStatus.OK);
 			
 		}
+		catch (Exception e) 
+		{
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	
+	@GetMapping("/distance-report")
+	public ResponseEntity<Object> getDistanceReport(@RequestBody DistanceRequestEntity distanceRequestEntity)
+	{
+		try 
+		{
+			if (!repo.existsById(distanceRequestEntity.getId_vehicle()))
+				return new ResponseEntity<Object>("101", HttpStatus.BAD_REQUEST);
+			
+			List<DistanceReport> distanceReports = distanceReportRepo.getMonthDistance(distanceRequestEntity.getId_vehicle(), distanceRequestEntity.getMonth());
+			
+			return new ResponseEntity<Object>(distanceReports,HttpStatus.OK);
+		} 
 		catch (Exception e) 
 		{
 			// TODO: handle exception
