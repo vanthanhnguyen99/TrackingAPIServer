@@ -166,6 +166,8 @@ public class VehicleController {
 		catch (Exception e) 
 		{
 			// TODO: handle exception
+			if (e.getMessage().toString().equalsIgnoreCase("Schedule not acceptable"))
+				return new ResponseEntity<Object>("104",HttpStatus.NOT_ACCEPTABLE);
 			e.printStackTrace();
 		}
 		return new ResponseEntity<Object>("103",HttpStatus.INTERNAL_SERVER_ERROR);
@@ -216,7 +218,7 @@ public class VehicleController {
 	}
 	
 	
-	@GetMapping("/distance-report")
+	@PostMapping("/distance-report")
 	public ResponseEntity<Object> getDistanceReport(@RequestBody DistanceRequestEntity distanceRequestEntity)
 	{
 		try 
