@@ -226,7 +226,7 @@ public class VehicleController {
 			if (!repo.existsById(distanceRequestEntity.getId_vehicle()))
 				return new ResponseEntity<Object>("101", HttpStatus.BAD_REQUEST);
 			
-			List<DistanceReport> distanceReports = distanceReportRepo.getMonthDistance(distanceRequestEntity.getId_vehicle(), distanceRequestEntity.getMonth());
+			List<DistanceReport> distanceReports = distanceReportRepo.getMonthDistance(distanceRequestEntity.getId_vehicle(), distanceRequestEntity.getMonth(),distanceRequestEntity.getYear());
 			
 			return new ResponseEntity<Object>(distanceReports,HttpStatus.OK);
 		} 
