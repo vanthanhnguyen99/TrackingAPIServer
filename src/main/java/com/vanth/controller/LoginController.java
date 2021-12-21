@@ -26,10 +26,10 @@ public class LoginController
 	@PostMapping("/login")
 	public ResponseEntity<Object> login(@RequestBody Account account)
 	{
-		if (repo.login(account.getUsername(), account.getPassword()) == 0)
-			return new ResponseEntity<Object>(false,HttpStatus.OK);
+		 int res = repo.login(account.getUsername(), account.getPassword());
+			return new ResponseEntity<Object>(res,HttpStatus.OK);
 				
-		return new ResponseEntity<Object>(true,HttpStatus.OK);
+		
 	}
 	
 	@PostMapping("/regist")

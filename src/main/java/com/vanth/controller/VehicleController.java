@@ -1,7 +1,9 @@
 package com.vanth.controller;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import com.vanth.request_response.DeviceInfoResponse;
 import com.vanth.request_response.DistanceRequestEntity;
 import com.vanth.tcpserver.Coord;
 import com.vanth.tcpserver.DistanceRequest;
+import com.vanth.tcpserver.NotifyTimeTask;
 import com.vanth.tcpserver.TCPServer;
 
 @RestController
@@ -159,6 +162,24 @@ public class VehicleController {
 			LocalDateTime finish = scheduleDTO.getFinish();
 			
 			repo.insertSchedule(vehicle_id, start_time, start_x, start_y, finish_time, finish_x, finish_y, status, finish);
+			
+			if (NotifyTimeTask.current.getStartTime().isAfter(start_time))
+			{
+				NotifyTimeTask.timer.cancel();
+				
+				
+				Schedule schedule = new Schedule();
+				Vehicle vehicle = new Vehicle();
+				vehicle.setId(vehicle_id);
+				schedule.setVehicle(vehicle);
+				schedule.setStartTime(start_time);
+				NotifyTimeTask.current = schedule;
+				
+				Timestamp timestamp = Timestamp.valueOf(schedule.getStartTime());
+				Date date = new Date(timestamp.getTime());
+				
+				NotifyTimeTask.timer.schedule(new NotifyTimeTask(), date);
+			}
 			
 			return new ResponseEntity<Object>("200",HttpStatus.OK);
 			

@@ -17,11 +17,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -543,7 +546,7 @@ public class TCPServer extends Thread {
             String query = "INSERT INTO TRACKING(ID_VEHICLE,TRACKTIME,X,Y) VALUES ('" + id_vehicle + "','" + now.toString() + "'," + x + "," + y + ")";
             PreparedStatement ps = connect.prepareStatement(query);
             ps.executeUpdate();
-            System.out.println(query);
+//            System.out.println(query);
             
         }
         catch (Exception e)
@@ -579,7 +582,7 @@ public class TCPServer extends Thread {
              String query = "EXEC INSERTDISTANCE '" + time.toString() + "' , '" + id_vehicle + "', " + distance ;
              PreparedStatement ps = connect.prepareStatement(query);
              ps.executeUpdate();
-             System.out.println(query);
+//             System.out.println(query);
              
          }
          catch (Exception e)
@@ -605,6 +608,14 @@ public class TCPServer extends Thread {
 //    		finish.setLongitude(106.77443);
 //    		
 //    		MyGETRequest(start, finish);
+    		
+    		NotifyTimeTask.current = NotifyTimeTask.getCurrentSchdedule();
+    		NotifyTimeTask.timer = new Timer();
+    		
+    		Timestamp timestamp = Timestamp.valueOf(NotifyTimeTask.current.getStartTime());
+    		Date date = new Date(timestamp.getTime());
+    		
+    		NotifyTimeTask.timer.schedule(new NotifyTimeTask(), date);
     		
     		main(null);
     	}
