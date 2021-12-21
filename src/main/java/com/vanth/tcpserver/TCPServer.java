@@ -137,12 +137,14 @@ public class TCPServer extends Thread {
                     		// handle for user's devices
                     		if (!handleDevice(socket, i))
                     		{
-                    			System.out.println("Device Disconnected " + socket);
+                    			System.out.println("Device disconnected " + socket);
+                    			System.out.println("User id " + userID[i] + " has been removed");
                     			userDevice[i] = null;
                     			userID[i] = -1;
                     			numberDevice--;
                     			
                     			socket.close();
+                    			
                     		}
                     		break;
                     	}
@@ -481,7 +483,7 @@ public class TCPServer extends Thread {
         }
         
         int userid = copy.getInt(0); // add to list???
-        System.out.println("user id = " + userid);
+        System.out.println("add user id = " + userid);
         
         
         // send confirm to client
@@ -506,7 +508,7 @@ public class TCPServer extends Thread {
     		{
     			// send Sting data to client
     			SocketChannel socket = userDevice[i];
-    			System.out.println(socket);
+    			System.out.println("sent to: " + socket);
     			ByteBuffer buffer = ByteBuffer.allocate(256);
     			
     			buffer = ByteBuffer.wrap(data.getBytes());
