@@ -44,6 +44,7 @@ public class Users implements Serializable {
     @JoinColumn(name="USERNAME", nullable=false)
     private Account account;
     @OneToMany(mappedBy="users")
+    @JsonIgnore
     private Set<Vehicle> vehicle;;
 
     /** Default constructor. */

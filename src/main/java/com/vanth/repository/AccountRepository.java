@@ -11,4 +11,7 @@ public interface AccountRepository extends JpaRepository<Account,String>
 {
 	@Query(value = "EXEC SP_LOGIN ?1,?2", nativeQuery = true)
 	int login(String username, String password);
+	
+	@Query(value = "SELECT TOP(1) * FROM ACCOUNT WHERE USERNAME = ?1", nativeQuery = true)
+	Account getAccountFromUsername(String username);
 }

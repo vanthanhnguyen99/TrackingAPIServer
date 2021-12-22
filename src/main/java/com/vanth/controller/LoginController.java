@@ -1,13 +1,24 @@
 package com.vanth.controller;
 
-import org.apache.catalina.User;
+
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vanth.jwt.configs.MyUserDetailsService;
+import com.vanth.jwt.configs.JwtTokenProvider;
+import com.vanth.jwt.configs.CustomUserDetail;
 import com.vanth.entity.Account;
 import com.vanth.entity.Users;
 import com.vanth.repository.AccountRepository;
@@ -15,20 +26,44 @@ import com.vanth.repository.UserRepository;
 import com.vanth.request_response.RegistAccountRequest;
 
 @RestController
+@CrossOrigin
 public class LoginController 
 {
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	MyUserDetailsService userDetailsService;
+	
 	@Autowired
 	AccountRepository repo;
 	
 	@Autowired
 	UserRepository repoUsers;
 	
+	@Autowired
+	private JwtTokenProvider jwtTokenProvider;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
+	
 	@PostMapping("/login")
 	public ResponseEntity<Object> login(@RequestBody Account account)
 	{
-		 int res = repo.login(account.getUsername(), account.getPassword());
-			return new ResponseEntity<Object>(res,HttpStatus.OK);
-				
+		
+		try
+		{
+			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword()));
+		}
+		catch (Exception e) 
+		{
+			// TODO: handle exception
+			return new ResponseEntity<Object>("",HttpStatus.OK);
+		}
+		CustomUserDetail userDetails = (CustomUserDetail) userDetailsService.loadUserByUsername(account.getUsername());
+		String jwt = jwtTokenProvider.generateToken(userDetails);
+		return new ResponseEntity<Object>(jwt,HttpStatus.OK);
 		
 	}
 	

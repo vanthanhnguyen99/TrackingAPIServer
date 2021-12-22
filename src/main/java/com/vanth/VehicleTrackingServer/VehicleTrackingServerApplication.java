@@ -13,7 +13,7 @@ import com.vanth.tcpserver.TCPServer;
 
 @SpringBootApplication
 @EntityScan("com.vanth.entity")
-@ComponentScan("com.vanth.controller, com.vanth.tcpserver")
+@ComponentScan("com.vanth.controller, com.vanth.tcpserver,com.vanth.jwt.configs")
 @EnableJpaRepositories("com.vanth.repository")
 
 public class VehicleTrackingServerApplication {
