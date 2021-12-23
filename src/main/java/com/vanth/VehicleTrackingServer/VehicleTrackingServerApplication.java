@@ -7,15 +7,16 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Controller;
 
 import com.vanth.tcpserver.TCPServer;
 
 @SpringBootApplication
 @EntityScan("com.vanth.entity")
-@ComponentScan("com.vanth.controller, com.vanth.tcpserver,com.vanth.jwt.configs")
+@ComponentScan("com.vanth.controller, com.vanth.tcpserver,com.vanth.jwt.configs,com.vanth.VehicleTrackingServer")
 @EnableJpaRepositories("com.vanth.repository")
-
+@EnableScheduling
 public class VehicleTrackingServerApplication {
 
 	public static void main(String[] args) {

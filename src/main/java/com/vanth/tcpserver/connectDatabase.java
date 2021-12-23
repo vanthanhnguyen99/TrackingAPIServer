@@ -8,7 +8,7 @@ public class connectDatabase {
 	public static Connection getConnection()
     {
         Connection ketnoi = null;
-        String uRL = "jdbc:sqlserver://localhost:1433;databaseName=VehicleTracking";
+        String uRL = "jdbc:sqlserver://192.168.31.142:1433;databaseName=VehicleTracking";
         String user = "api";
         String pass = "123";
         try 

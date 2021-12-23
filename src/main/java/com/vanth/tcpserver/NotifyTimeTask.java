@@ -28,6 +28,8 @@ public class NotifyTimeTask extends TimerTask {
 		notificationRequest.setContent("Phương tiên " + current.getVehicle().getId() + " đã đến giờ xuất phát theo lịch trình");
 		notificationRequest.setVehicle_id(current.getVehicle().getId());
 		
+		
+		
 		try {
 			String data = JsonConverter.convertObjectToJson(notificationRequest);
 			TCPServer.sendDataForUser(data, notificationRequest.getId_user());
@@ -41,6 +43,7 @@ public class NotifyTimeTask extends TimerTask {
 		
 		current = getCurrentSchdedule();
 		timer.schedule(new NotifyTimeTask(),date);
+		
 		
 		
 		
@@ -87,7 +90,7 @@ public class NotifyTimeTask extends TimerTask {
         try
         {
             Statement st = connect.createStatement();
-            String query = "SELECT TOP 1 FROM VEHICLE WHERE ID = '" + vehicle_id + "'"; 
+            String query = "SELECT TOP 1 [ID_USER] FROM VEHICLE WHERE ID = '" + vehicle_id + "'"; 
             ResultSet rs = st.executeQuery(query);
             Schedule schedule = new Schedule();
             if (rs.next())

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -169,6 +170,7 @@ public class VehicleController {
 			{
 				NotifyTimeTask.timer.cancel();
 				
+				NotifyTimeTask.timer = new Timer();
 				
 				Schedule schedule = new Schedule();
 				Vehicle vehicle = new Vehicle();
@@ -181,6 +183,7 @@ public class VehicleController {
 				Date date = new Date(timestamp.getTime());
 				
 				NotifyTimeTask.timer.schedule(new NotifyTimeTask(), date);
+				System.out.println("Add schedule notify");
 			}
 			
 			return new ResponseEntity<Object>("200",HttpStatus.OK);

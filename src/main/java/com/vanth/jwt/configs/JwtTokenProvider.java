@@ -17,7 +17,7 @@ public class JwtTokenProvider {
 	// this is contain jwt
 	private final String JWT_SECRET = "vanth";
 	//time expire
-	private final long JWT_EXPIRATION = 24 * 60 * 60;
+	private final long JWT_EXPIRATION = 24 * 60 * 60 * 1000;
 	
 	//Create JWT from user
 	
@@ -44,7 +44,7 @@ public class JwtTokenProvider {
 	// validate token
 	public boolean validateToken(String authToken) {
 		try {
-			System.out.println("token: " + authToken);
+//			System.out.println("token: " + authToken);
 			if (authToken.isEmpty()) throw new IllegalArgumentException();
 			Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(authToken);
 			return true;

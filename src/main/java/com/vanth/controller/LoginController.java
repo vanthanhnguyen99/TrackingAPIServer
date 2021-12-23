@@ -23,6 +23,7 @@ import com.vanth.entity.Account;
 import com.vanth.entity.Users;
 import com.vanth.repository.AccountRepository;
 import com.vanth.repository.UserRepository;
+import com.vanth.request_response.LoginResponse;
 import com.vanth.request_response.RegistAccountRequest;
 
 @RestController
@@ -59,11 +60,20 @@ public class LoginController
 		catch (Exception e) 
 		{
 			// TODO: handle exception
-			return new ResponseEntity<Object>("",HttpStatus.OK);
+			LoginResponse loginResponse = new LoginResponse();
+			loginResponse.setToken("");
+			return new ResponseEntity<Object>(loginResponse,HttpStatus.OK);
 		}
 		CustomUserDetail userDetails = (CustomUserDetail) userDetailsService.loadUserByUsername(account.getUsername());
 		String jwt = jwtTokenProvider.generateToken(userDetails);
-		return new ResponseEntity<Object>(jwt,HttpStatus.OK);
+		System.out.println("token: " + jwt);
+		
+		int id_user = repoUsers.getIdUserFromUsername(account.getUsername());
+		LoginResponse loginResponse = new LoginResponse();
+		loginResponse.setId(id_user);
+		loginResponse.setToken(jwt);
+		
+		return new ResponseEntity<Object>(loginResponse,HttpStatus.OK);
 		
 	}
 	

@@ -326,6 +326,7 @@ public class TCPServer extends Thread {
     public boolean handleClient(SocketChannel socket, int current) throws IOException, ClassNotFoundException, InterruptedException
     {
         ByteBuffer buffer = ByteBuffer.allocate(40);
+        	
         int a = -1;
         try
         {
@@ -337,6 +338,8 @@ public class TCPServer extends Thread {
         }
 
         if (a <= 0) return false;
+        
+        
         
         ByteBuffer copy = ByteBuffer.allocate(buffer.capacity());
         // rotate byte
@@ -357,10 +360,22 @@ public class TCPServer extends Thread {
         }
         
         // convert ByteBuffer to Byte array
-        byte[] arr = new byte[copy.capacity()];
+        byte[] arr = new byte[40];
         copy.get(arr);
         String name = new String(arr);
         name = name.trim();
+        
+        // handle name
+        String tempName = "";
+        for (int i = 0; i < name.length(); i++)
+        {
+        	
+        	if (isValidChar(name.charAt(i)))
+        		tempName = tempName + name.charAt(i);
+        	else break;
+        }
+        
+        name = tempName;
         
         // get data from byte array
         Coord data = new Coord(x,y,name);
@@ -384,9 +399,11 @@ public class TCPServer extends Thread {
                 }
             }
             
+            System.out.println("Check regist " + name);
+            System.out.println("Receive: " + a);
+            
             if (!checkRetristration(name)) // check registration in database
             {
-            	System.out.println("???");
                 check = false;
                 byte[] dataByte = new byte[]{(byte)(check?1:0)};
                 buffer = ByteBuffer.wrap(dataByte);
@@ -595,6 +612,13 @@ public class TCPServer extends Thread {
          return true;
     }
     
+    public boolean isValidChar(char x)
+    {
+    	if (x >= 48 && x <= 57) return true;
+    	if (x >= 97 && x <= 122) return true;
+    	if (x >= 65 && x <= 90) return true;
+    	return false;
+    }
   
     public void run()
     {
@@ -611,13 +635,14 @@ public class TCPServer extends Thread {
 //    		
 //    		MyGETRequest(start, finish);
     		
-    		NotifyTimeTask.current = NotifyTimeTask.getCurrentSchdedule();
-    		NotifyTimeTask.timer = new Timer();
+//    		NotifyTimeTask.current = NotifyTimeTask.getCurrentSchdedule();
+//    		NotifyTimeTask.timer = new Timer();
+//    		
+//    		Timestamp timestamp = Timestamp.valueOf(NotifyTimeTask.current.getStartTime());
+//    		Date date = new Date(timestamp.getTime());
+//    		
+//    		NotifyTimeTask.timer.schedule(new NotifyTimeTask(), date);
     		
-    		Timestamp timestamp = Timestamp.valueOf(NotifyTimeTask.current.getStartTime());
-    		Date date = new Date(timestamp.getTime());
-    		
-    		NotifyTimeTask.timer.schedule(new NotifyTimeTask(), date);
     		
     		main(null);
     	}
